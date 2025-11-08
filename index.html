@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 통근 보조 앱 - 당신의 저녁 시간을 되찾아 드립니다</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background: #0a0e17;
+            color: #e8eaed;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 23, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(30, 144, 255, 0.2);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #e8eaed;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        nav a:hover {
+            color: #1E90FF;
+            background: rgba(30, 144, 255, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 6rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(30, 144, 255, 0.05) 0%, rgba(10, 14, 23, 0.8) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(30, 144, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #1E90FF 0%, #3CB371 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #b8bfc6;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, #1E90FF 0%, #3CB371 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(30, 144, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(30, 144, 255, 0.5);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #1E90FF;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #b8bfc6;
+            margin-bottom: 4rem;
+        }
+
+        /* Problem Section */
+        .problem {
+            background: rgba(255, 59, 48, 0.05);
+            border-radius: 20px;
+            padding: 4rem 3rem;
+            margin: 3rem 0;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .pain-point {
+            background: rgba(10, 14, 23, 0.6);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            border-left: 4px solid #1E90FF;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(30, 144, 255, 0.05);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(30, 144, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1E90FF, #3CB371);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(30, 144, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(30, 144, 255, 0.2);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1E90FF;
+        }
+
+        /* Pricing Table */
+        .pricing-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: rgba(30, 144, 255, 0.05);
+            border: 2px solid rgba(30, 144, 255, 0.2);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, rgba(30, 144, 255, 0.15) 0%, rgba(60, 179, 113, 0.15) 100%);
+            border: 2px solid #3CB371;
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(30, 144, 255, 0.3);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #3CB371;
+            margin: 1rem 0;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #666;
+            font-size: 1.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #3CB371;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Trust Section */
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .trust-item {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .trust-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Closing Section */
+        .closing {
+            background: linear-gradient(135deg, rgba(30, 144, 255, 0.1) 0%, rgba(60, 179, 113, 0.1) 100%);
+            border-radius: 30px;
+            padding: 5rem 3rem;
+            text-align: center;
+            margin: 5rem 0;
+            border: 2px solid rgba(30, 144, 255, 0.3);
+        }
+
+        .closing h2 {
+            font-size: 2.8rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(10, 14, 23, 0.5);
+            border-top: 1px solid rgba(30, 144, 255, 0.2);
+            color: #666;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+            }
+
+            section {
+                padding: 3rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#problem">문제</a></li>
+            <li><a href="#solution">솔루션</a></li>
+            <li><a href="#features">혜택</a></li>
+            <li><a href="#trust">신뢰</a></li>
+            <li><a href="#pricing">가격</a></li>
+            <li><a href="#cta">신청</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content animate">
+            <h1>당신의 '잃어버린 퇴근 후 저녁 시간',<br>AI가 되찾아 드립니다.</h1>
+            <p class="subtitle">교통 체증 때문에 매일 30분씩 늦는 퇴근길,<br>이제 딥러닝 기반 예측으로 스마트하게 우회하세요.</p>
+            <a href="#cta" class="cta-button">지금 바로 베타 테스터 신청하고 교통 지옥 탈출하기 →</a>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section id="problem">
+        <h2>🚨 매일 밤 당신을 지치게 하는 지역 교통 문제</h2>
+        <p class="section-subtitle">방치하지 마세요</p>
+        
+        <div class="problem">
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+                지역에 정착한 <strong style="color: #1E90FF;">30대 직장인</strong>이라면 공감할 수밖에 없는 현실입니다.<br>
+                열심히 일한 당신, 누구보다 빠르게 집으로 돌아가고 싶습니다.
+            </p>
+            
+            <div class="pain-point">
+                <h3 style="color: #1E90FF; margin-bottom: 1rem;">😫 Pain Point</h3>
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    "퇴근을 빠르게 하고 싶지만, 퇴근 시간만 되면 <strong>교통이 말도 안 되게 정체가 심해</strong> 항상 집에 늦게 도착해요."
+                </p>
+            </div>
+            
+            <div style="margin-top: 2rem; padding: 2rem; background: rgba(255, 59, 48, 0.1); border-radius: 15px;">
+                <h3 style="color: #ff3b30; margin-bottom: 1rem;">❌ 결과</h3>
+                <ul style="list-style: none; font-size: 1.1rem; line-height: 2;">
+                    <li>✗ 소중한 저녁 시간이 사라집니다</li>
+                    <li>✗ 만성 피로와 스트레스가 쌓입니다</li>
+                    <li>✗ 기존 내비게이션은 '실시간' 정보만 제공</li>
+                    <li>✗ 예측하지 못해 결국 정체 구간에 갇힙니다</li>
+                </ul>
+            </div>
+            
+            <p style="text-align: center; font-size: 1.3rem; margin-top: 2rem; font-weight: 700; color: #3CB371;">
+                우리는 이 '예측 불가능성'을 근본적으로 해결해야 합니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section id="solution">
+        <h2>💡 혁신적인 퇴근 솔루션</h2>
+        <p class="section-subtitle">딥러닝 기반 통근 보조 앱 개발 코디네이터가 제시합니다</p>
+        
+        <div style="background: rgba(30, 144, 255, 0.05); padding: 3rem; border-radius: 20px; border: 2px solid rgba(30, 144, 255, 0.3); text-align: center;">
+            <p style="font-size: 1.3rem; line-height: 1.8; margin-bottom: 2rem;">
+                복잡한 교통 상황 영상을 <strong style="color: #1E90FF;">딥러닝으로 정밀하게 분석</strong>하는 새로운 기술을 만나보세요.<br>
+                단순한 내비게이션이 아닌, 당신의 퇴근길을 완벽하게 '개인화'하여 설계합니다.
+            </p>
+            
+            <div style="background: rgba(60, 179, 113, 0.1); padding: 2rem; border-radius: 15px; border-left: 4px solid #3CB371;">
+                <h3 style="color: #3CB371; margin-bottom: 1rem; font-size: 1.5rem;">핵심 가치 제안</h3>
+                <p style="font-size: 1.15rem; line-height: 1.8;">
+                    복잡한 교통 상황 영상을 딥러닝으로 분석하여, 퇴근 시간대의 <strong>실시간 및 예측 교통 상황을 직관적으로 보여주는 앱/위젯을 개발</strong>하고, 
+                    특정 정체 구간을 회피할 수 있는 <strong>'맞춤형 퇴근 가이드'</strong>를 지역 직장인 타겟에게 제공합니다.
+                </p>
+            </div>
+            
+            <p style="font-size: 1.4rem; margin-top: 2rem; font-weight: 700; color: #1E90FF;">
+                이 앱은 당신이 갇혀 있을 때가 아닌,<br>'정체가 시작되기 전'에 알려줍니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <h2>✅ 당신의 퇴근 시간을 지켜줄 3가지 핵심 기능</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">90% 정확도의 정체 예측</h3>
+                <p style="line-height: 1.8;">
+                    AI가 과거/실시간 교통 데이터를 학습하여 <strong>향후 30분 이내의 정체 구간을 미리 예측</strong>하고 시각적으로 표시합니다. 
+                    늦기 전에 우회할 기회를 잡으세요.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3 class="feature-title">나만을 위한 맞춤형 우회 경로</h3>
+                <p style="line-height: 1.8;">
+                    출/퇴근 경로의 특성을 학습하여, 당신의 <strong>운전 습관과 목적지에 최적화된 우회 경로</strong>를 2가지 이상 제시합니다.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">'원터치' 퇴근 위젯/알림</h3>
+                <p style="line-height: 1.8;">
+                    앱을 열 필요 없이, 퇴근 시간이 되면 <strong>가장 빠른 경로와 예상 시간을 푸시 알림</strong>으로 제공합니다. 
+                    단축키 하나로 바로 길 안내를 시작하세요.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section id="trust">
+        <h2>🤝 검증된 기술력과 든든한 지역 파트너십</h2>
+        <p class="section-subtitle">실제 데이터를 기반으로 서비스를 구축하고 있습니다</p>
+        
+        <div class="trust-grid">
+            <div class="trust-item">
+                <div class="trust-icon">🔬</div>
+                <h3 style="color: #1E90FF; margin-bottom: 1rem; font-size: 1.3rem;">전문성</h3>
+                <p style="line-height: 1.7;">
+                    AI/OpenCV 핵심 지식 및 논문 발표 경험을 가진 <strong>전문 엔지니어가 직접 개발을 주도</strong>합니다.
+                </p>
+            </div>
+            
+            <div class="trust-item">
+                <div class="trust-icon">🧪</div>
+                <h3 style="color: #1E90FF; margin-bottom: 1rem; font-size: 1.3rem;">MVP 검증</h3>
+                <p style="line-height: 1.7;">
+                    직장 내 <strong>특정 부서 1곳을 대상</strong>으로 앱 시범 운영을 진행하며, 명확한 피드백을 수집합니다.
+                </p>
+            </div>
+            
+            <div class="trust-item">
+                <div class="trust-icon">🤝</div>
+                <h3 style="color: #1E90FF; margin-bottom: 1rem; font-size: 1.3rem;">협력</h3>
+                <p style="line-height: 1.7;">
+                    <strong>지역 내 도로교통공사</strong>와 협력하여, 정확한 교통 데이터 및 시스템 통합 방안을 모색 중입니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing">
+        <h2>🚀 초기 베타 테스터 한정</h2>
+        <p class="section-subtitle">정가 대비 50% 특별 할인!</p>
+        
+        <div class="pricing-container">
+            <div class="pricing-card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">일반 정가</h3>
+                <div class="price">₩9,900<span style="font-size: 1rem; color: #666;">/월</span></div>
+                <ul style="list-style: none; text-align: left; margin: 2rem 0; line-height: 2;">
+                    <li>✓ 실시간/예측 통합 교통 정보</li>
+                    <li>✓ 개인화 맞춤형 우회 경로 추천</li>
+                    <li>✓ 광고 없는 깔끔한 인터페이스</li>
+                </ul>
+            </div>
+            
+            <div class="pricing-card featured">
+                <div class="badge">베타 테스터 특별 혜택</div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">프리미엄 예측 기능</h3>
+                <div class="original-price">₩9,900</div>
+                <div class="price">₩4,900<span style="font-size: 1rem; color: #999;">/월</span></div>
+                <ul style="list-style: none; text-align: left; margin: 2rem 0; line-height: 2;">
+                    <li>✓ 모든 일반 정가 기능 포함</li>
+                    <li>✓ <strong style="color: #3CB371;">영구적인 50% 할인 혜택 유지</strong></li>
+                    <li>✓ <strong style="color: #3CB371;">우선 피드백 및 기능 요청 반영</strong></li>
+                    <li>✓ <strong style="color: #3CB371;">프리미엄 기능 평생 무료 이용권 추첨</strong></li>
+                </ul>
+                <p style="color: #ff3b30; font-weight: 700; margin-top: 2rem;">
+                    ⚠️ 선착순 100명에게만 적용
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Closing CTA Section -->
+    <section id="cta">
+        <div class="closing">
+            <h2>⏰ 소중한 저녁 시간을<br>되찾으세요</h2>
+            <p style="font-size: 1.3rem; line-height: 1.8; margin: 2rem 0; color: #b8bfc6;">
+                매일 늦은 퇴근으로 가족과의 시간, 취미 생활, 자기계발을 포기하고 있지는 않으신가요?<br>
+                <strong style="color: #1E90FF;">단 몇 분의 단축이 삶의 질을 완전히 바꿔놓을 수 있습니다.</strong>
+            </p>
+            
+            <p style="font-size: 1.2rem; margin: 2rem 0; line-height: 1.8;">
+                딥러닝 기반 통근 보조 앱은 지역 직장인의 삶의 질 향상에 기여합니다.<br>
+                스마트한 기술로 지역 사회의 교통 체증 피해를 줄이는 혁신에 동참하세요.
+            </p>
+            
+            <a href="#" class="cta-button" style="font-size: 1.2rem; padding: 1.5rem 3.5rem; margin-top: 2rem;">
+                선착순 100명 한정, 50% 할인 혜택으로 지금 바로 신청하기 🚀
+            </a>
+            
+            <p style="margin-top: 2rem; color: #666; font-size: 0.9rem;">
+                * 향후 정식 출시 후에는 정가로 전환됩니다
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 딥러닝 기반 통근 보조 앱. All rights reserved.</p>
+        <p style="margin-top: 1rem;">지역 직장인의 삶의 질 향상을 위한 AI 교통 솔루션</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.8s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
